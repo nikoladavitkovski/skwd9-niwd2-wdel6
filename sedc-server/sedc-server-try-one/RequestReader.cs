@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Azure.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sedc_server_try_one
+namespace Sedc_Server_Try_One
 {
     public class RequestReader
     {
@@ -18,9 +18,9 @@ namespace sedc_server_try_one
         {
             byte[] bytes = new byte[1024];
             var readCount = stream.Read(bytes, 0, bytes.Length);
-            string requestString = Encoding.ASCII.GetString(bytes, 0, readCount);
+            string requestString = Encoding.ASCII.GetString(bytes,0,readCount);
             var request = RequestParser.Parse(requestString);
-            return request;
+            return new Request();
         }
     }
 }

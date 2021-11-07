@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Sedc.Server.Core;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace sedc_server_try_one
+namespace Sedc_Server_Try_One
 {
     internal class RequestParser
     {

@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace sedc_server_try_one
+﻿using Azure;
+namespace Sedc_Server_Try_One
 {
     internal class ResponseGenerator
     {
@@ -10,7 +9,9 @@ namespace sedc_server_try_one
 
         internal Response GenerateResponse(Request request)
         {
-            return new Response { Message = $"Hi, I'm a SEDC Server, nice to meet you! You used the {request.Method} method" };
+            return new Response { Message = $"Hi, I'm a SEDC Server, nice to meet you. You have used the {request.Method} method",
+                Status = 200
+            };
         }
     }
 }

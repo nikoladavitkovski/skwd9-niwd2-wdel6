@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Azure;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
-namespace sedc_server_try_one
+namespace Sedc_Server_Try_One
 {
     internal class ResponseSender
     {
