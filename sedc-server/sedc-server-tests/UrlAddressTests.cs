@@ -1,8 +1,12 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sedc.Server.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Sedc.Server.Tests
+namespace sedc_Server_Tests.UrlAddressTests
 {
     [TestClass]
     public class UrlAddressTests
@@ -91,8 +95,21 @@ namespace Sedc.Server.Tests
 
             Assert.AreEqual(expectedString, actual.ToString());
         }
+        [TestMethod]
 
+        public void URL_Address_Should_Return_Empty_Path_And_Parameters_When_Called_With_No_Leading_Question_Mark()
+        {
+            //1.Assert
+            var input = "";
+            var expected = string.Empty;
+
+            //2. Act
+            var actual = UrlAddress.FromString(input);
+
+            //3.Arrange
+            Assert.AreEqual(0, actual.Path.Count());
+            Assert.AreEqual(0, actual.Params.Count());
+            Assert.AreEqual(expected, actual.ToString());
+        }
     }
-
-
 }
