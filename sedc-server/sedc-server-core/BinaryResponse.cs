@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sedc.Server.Core
+namespace sedc_server_Server
 {
-    public class BinaryResponse : IResponse<byte[]>
+    public class BinaryResponse : IResponse<object>
     {
         public Status Status { get; set; }
-        public byte[] Message { get; set; }
+
+        public object Message { get; set; }
 
         public BinaryResponse()
         {

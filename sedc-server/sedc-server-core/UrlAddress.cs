@@ -9,15 +9,19 @@ namespace Sedc.Server.Core
     public record UrlAddress
     {
         private readonly string[] paths = new string[0];
-        public IList<string> Path {
-            get {
+        public IList<string> Path
+        {
+            get
+            {
                 return new ReadOnlyCollection<string>(paths);
             }
         }
 
         private readonly Dictionary<string, string> parameters = new();
-        public IDictionary<string, string> Params { 
-            get {
+        public IDictionary<string, string> Params
+        {
+            get
+            {
                 return new ReadOnlyDictionary<string, string>(parameters);
             }
         }
@@ -62,7 +66,8 @@ namespace Sedc.Server.Core
         {
             var path = string.Join('/', paths);
             var query = string.Join('&', parameters.Select(kvp => $"{kvp.Key}={kvp.Value}"));
-            if (string.IsNullOrEmpty(query)) {
+            if (string.IsNullOrEmpty(query))
+            {
                 return path;
             }
             return $"{path}?{query}";

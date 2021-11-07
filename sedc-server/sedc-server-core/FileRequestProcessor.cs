@@ -1,11 +1,15 @@
-﻿using System;
+﻿using Azure;
+using Azure.Core;
+using Sedc.Server.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Request = Sedc.Server.Core.Request;
 
-namespace Sedc.Server.Core
+namespace sedc_server_Server
 {
     public class FileRequestProcessor : IRequestProcessor
     {
@@ -15,16 +19,17 @@ namespace Sedc.Server.Core
 
         public FileRequestProcessor(string basePath)
         {
-            if (!Directory.Exists(basePath)) 
+            if (!Directory.Exists(basePath))
             {
                 throw new ApplicationException($"Folder {basePath} does not exist. Please create it before starting the server");
             }
             BasePath = basePath;
         }
-        public IResponse Process(Request request)
+        public IResponse Process(Request request, ILogger logger, UrlAddress address)
         {
             if (request.Address.Path.Count == 0)
             {
+                logger.Warning($"The path is empty, returning Bad Request");
                 return new TextResponse
                 {
                     Status = Status.BadRequest
@@ -33,6 +38,7 @@ namespace Sedc.Server.Core
             string filename = Path.Combine(BasePath, request.Address.Path[0]);
             if (!File.Exists(filename))
             {
+                logger.Error($"User tried to access non-existant file {filename}, returning Not Found");
                 return new TextResponse
                 {
                     Status = Status.NotFound
@@ -43,13 +49,16 @@ namespace Sedc.Server.Core
 
             if (textExtensions.Contains(extension))
             {
+                logger.Info($"User tried to access text file {filename}, returning text response");
                 var output = File.ReadAllText(filename);
                 return new TextResponse
                 {
                     Message = output
                 };
-            } else
+            }
+            else
             {
+                logger.Info($"User tried to access binary file {filename}, returning binary response");
                 var output = File.ReadAllBytes(filename);
                 return new BinaryResponse
                 {
@@ -57,6 +66,13 @@ namespace Sedc.Server.Core
                 };
             }
 
+        }
+
+        public string Describe() => $"FileRequestProcessor: Serving files from folder '{BasePath}'";
+
+        public IResponse Process(Azure.Core.Request request, ILogger logger)
+        {
+            throw new NotImplementedException();
         }
     }
 }

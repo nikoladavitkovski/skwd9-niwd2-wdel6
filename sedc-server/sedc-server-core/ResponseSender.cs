@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Azure;
+using sedc_server_Server;
+using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
-
-namespace Sedc.Server.Core
+namespace Sedc_Server_Try_One
 {
     internal class ResponseSender
     {
@@ -10,34 +12,30 @@ namespace Sedc.Server.Core
         {
         }
 
-        internal void Send(IResponse response, NetworkStream stream)
+        internal void Send(IResponse IResponse, NetworkStream NetworkStream)
         {
-            // var statusLine = "HTTP/1.1 "+ (int)response.Status + " " +response.Message + "\r\n"; // UGLY - NEVER DO THIS, NOT EVEN IN C# 1.0
-            // var statusLine = string.Format("HTTP/1.1 {0} {1}\r\n", (int)response.Status, response.Message); // MUCH BETTER - ONLY UP TO C# 6.0
-            var statusLine = $"HTTP/1.1 {response.Status.Code} {response.Status.Message}\r\n";
-
+            var statusLine = string.Format("HTTP/1.1 {0} {1}\r\n", IResponse.Status, IResponse.Message);
             var separator = "\r\n";
 
-            if (response is TextResponse textResponse)
+            if (IResponse is TextResponse textResponse)
             {
                 var body = textResponse.Message;
                 var responseString = $"{statusLine}{separator}{body}";
                 var responseBytes = Encoding.ASCII.GetBytes(responseString);
-                stream.Write(responseBytes);
-            } 
-            else if (response is BinaryResponse binaryResponse)
+                NetworkStream.Write(responseBytes);
+            }
+            else if (IResponse is BinaryResponse binaryResponse)
             {
                 var responseString = $"{statusLine}{separator}";
                 var responseBytes = Encoding.ASCII.GetBytes(responseString);
-                stream.Write(responseBytes);
+                NetworkStream.Write(responseBytes);
                 var body = binaryResponse.Message;
-                stream.Write(body);
-            } 
+                NetworkStream.Write(responseBytes);
+            }
             else
             {
-                throw new ApplicationException($"Invalid response type {response.GetType().FullName}");
+                throw new ApplicationException($"Invalid response type {IResponse.GetType().FullName}");
             }
-
         }
     }
 }

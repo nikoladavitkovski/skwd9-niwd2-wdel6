@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sedc.Server.Core
+﻿
+namespace sedc_server_Server
 {
     internal interface IResponse<T> : IResponse
     {
@@ -14,5 +9,6 @@ namespace Sedc.Server.Core
     public interface IResponse
     {
         public Status Status { get; set; }
+        object Message { get; }
     }
 }

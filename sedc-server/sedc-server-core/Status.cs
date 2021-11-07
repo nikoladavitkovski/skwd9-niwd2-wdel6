@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sedc.Server.Core
+namespace sedc_server_Server
 {
     public record Status
     {
@@ -17,9 +17,9 @@ namespace Sedc.Server.Core
             Message = message;
         }
 
-        public static Status OK = new (200, "OK");
-        public static Status BadRequest = new (400, "Bad Request");
+        public static Status OK = new(200, "OK");
+        public static Status BadRequest = new(400, "Bad Request");
         public static Status NotFound = new(404, "Not Found");
-        public static Status ServerError = new (500, "Internal Server Error");
+        public static Status ServerError = new(500, "Internal Server Error");
     }
 }

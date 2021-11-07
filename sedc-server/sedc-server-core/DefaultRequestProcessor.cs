@@ -1,4 +1,5 @@
-﻿using System;
+﻿using sedc_server_Server;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,20 @@ namespace Sedc.Server.Core
 {
     class DefaultRequestProcessor : IRequestProcessor
     {
-        public IResponse Process(Request request)
+        public string Describe() => "DefaultRequestProcessor";
+
+        public IResponse Process(Request request, ILogger logger)
         {
             return new TextResponse
             {
                 Message = $"Hi, I'm a SEDC Server, nice to meet you! You used the {request.Method} method on the {request.Address} URL",
                 Status = Status.OK
             };
+        }
+
+        public IResponse Process(Azure.Core.Request request, ILogger logger)
+        {
+            throw new NotImplementedException();
         }
     }
 }
