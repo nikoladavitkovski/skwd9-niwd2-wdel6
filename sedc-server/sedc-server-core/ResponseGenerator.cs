@@ -1,18 +1,17 @@
-﻿using Azure;
-using Azure.Core;
-using sedc_server_Server;
+﻿using sedc_server_Server;
 using System;
+using System.Collections.Generic;
 
-namespace Sedc_Server_Try_One
+namespace Sedc.Server.Core
 {
     internal class ResponseGenerator
     {
 
-        private readonly IRequestProcessor processor;
+        private readonly IEnumerable<IRequestProcessor> processors;
         private readonly ILogger logger;
-        public ResponseGenerator(IRequestProcessor processor, ILogger logger)
+        public ResponseGenerator(IEnumerable<IRequestProcessor> processors, ILogger logger)
         {
-            this.processor = processor;
+            this.processors = processors;
             this.logger = logger;
         }
 
@@ -23,19 +22,42 @@ namespace Sedc_Server_Try_One
                 throw new ApplicationException("Validation failed");
                 //return new Response { Message = "Invalid response"}
             }
+
+            IRequestProcessor processor = null;
+            foreach (var candidate in processors)
+            {
+                if (candidate.ShouldProcess(request))
+                {
+                    processor = candidate;
+                    break;
+                }
+            }
+
             logger.Debug($"Running {processor.Describe()}");
-            var response = processor.Process(request, logger);
-            return response;
+            try
+            {
+                var response = processor.Process(request, logger);
+                return response;
+            }
+            catch (SedcServerException ssex)
+            {
+                logger.Error(ssex.Message);
+                return new TextResponse
+                {
+                    Message = Status.GenericErrorMessage,
+                    Status = Status.ServerError
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.Critical(ex.Message);
+                throw;
+            }
         }
 
         private bool ValidateRequest(Request request)
         {
             return true;
-        }
-
-        internal object GenerateResponse(Sedc.Server.Core.Request request)
-        {
-            throw new NotImplementedException();
         }
     }
 }

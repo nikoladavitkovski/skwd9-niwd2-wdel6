@@ -16,26 +16,40 @@ namespace sedc_server_Server
         private string[] textExtensions = new[] { ".html", ".txt" };
 
         public string BasePath { get; private set; }
+        public string DefaultDocument { get; private set; }
 
-        public FileRequestProcessor(string basePath)
+        public FileRequestProcessor(string basePath,string defaultDocument="index.html")
         {
             if (!Directory.Exists(basePath))
             {
                 throw new ApplicationException($"Folder {basePath} does not exist. Please create it before starting the server");
             }
             BasePath = basePath;
+            DefaultDocument = defaultDocument;
         }
-        public IResponse Process(Request request, ILogger logger, UrlAddress address)
+        public IResponse Process(Request request, ILogger logger)
         {
-            if (request.Address.Path.Count == 0)
+            var fullPath = Path.Combine(request.Address.Path.ToArray());
+
+            string filename = Path.Combine(BasePath, fullPath);
+
+            // todo: check whether filename is actually inside the base path
+            // In order to prevent Directory Traversal
+
+            if (Directory.Exists(filename))
             {
-                logger.Warning($"The path is empty, returning Bad Request");
-                return new TextResponse
-                {
-                    Status = Status.BadRequest
-                };
+                filename = Path.Combine(filename, DefaultDocument);
             }
-            string filename = Path.Combine(BasePath, request.Address.Path[0]);
+
+            if (filename.Contains(BasePath))
+            {
+                Console.WriteLine($"The basepath {BasePath} exists inside the filename. You can open the file.");
+                Directory.Exists(BasePath);
+            } else
+            {
+                Directory.Move(filename,BasePath);
+            }
+
             if (!File.Exists(filename))
             {
                 logger.Error($"User tried to access non-existant file {filename}, returning Not Found");
@@ -47,30 +61,37 @@ namespace sedc_server_Server
 
             var extension = Path.GetExtension(filename);
 
-            if (textExtensions.Contains(extension))
+            try
             {
-                logger.Info($"User tried to access text file {filename}, returning text response");
-                var output = File.ReadAllText(filename);
-                return new TextResponse
+                if (textExtensions.Contains(extension))
                 {
-                    Message = output
-                };
+                    logger.Info($"User tried to access text file {filename}, returning text response");
+                    var output = File.ReadAllText(filename);
+                    return new TextResponse
+                    {
+                        Message = output
+                    };
+                }
+                else
+                {
+                    logger.Info($"User tried to access binary file {filename}, returning binary response");
+                    var output = File.ReadAllBytes(filename);
+                    return new BinaryResponse
+                    {
+                        Message = output
+                    };
+                }
             }
-            else
+            catch (Exception ex)
             {
-                logger.Info($"User tried to access binary file {filename}, returning binary response");
-                var output = File.ReadAllBytes(filename);
-                return new BinaryResponse
-                {
-                    Message = output
-                };
+                string message = $"Error occured when accessing file {filename}, {ex.Message}";
+                throw new SedcServerException(message, ex);
             }
-
         }
 
         public string Describe() => $"FileRequestProcessor: Serving files from folder '{BasePath}'";
 
-        public IResponse Process(Azure.Core.Request request, ILogger logger)
+        public bool ShouldProcess(Request request)
         {
             throw new NotImplementedException();
         }

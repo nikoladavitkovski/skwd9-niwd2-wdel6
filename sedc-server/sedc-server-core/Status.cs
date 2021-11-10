@@ -16,6 +16,7 @@ namespace sedc_server_Server
             Code = code;
             Message = message;
         }
+        public static string GenericErrorMessage = "Error occurred, please try again later!";
 
         public static Status OK = new(200, "OK");
         public static Status BadRequest = new(400, "Bad Request");

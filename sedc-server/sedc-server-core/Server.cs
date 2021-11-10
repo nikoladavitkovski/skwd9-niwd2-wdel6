@@ -20,6 +20,8 @@ namespace sedc_server_Server
             this.options = options;
         }
 
+        public void RegisterProcessor(IRequestProcessor requestProcessor) => this.options.RegisterProcessor(requestProcessor);
+
         public void Start()
         {
             var address = IPAddress.Loopback;
@@ -41,7 +43,7 @@ namespace sedc_server_Server
                 var request = reader.ReadRequest(stream);
 
                 // Generate a response based on the request
-                var generator = new ResponseGenerator(options.Processor, options.Logger);
+                var generator = new ResponseGenerator(options.Processors, options.Logger);
                 var response = generator.GenerateResponse(request);
 
                 // Sending the response

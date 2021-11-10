@@ -13,7 +13,7 @@ namespace sedc_server_Server
 
         public List<string> AllowedMethods { get; set; }
 
-        public IRequestProcessor Processor { get; set; }
+        public IEnumerable<IRequestProcessor> Processors { get; set; }
 
         public ILogger Logger { get; set; }
 
@@ -34,9 +34,9 @@ namespace sedc_server_Server
                 options.AllowedMethods = ServerOptions.Default.AllowedMethods;
             }
 
-            if (options.Processor == default(IRequestProcessor))
+            if (options.Processors == default(IRequestProcessor))
             {
-                options.Processor = ServerOptions.Default.Processor;
+                options.Processors = ServerOptions.Default.Processors;
             }
 
             if (options.Logger == default(ILogger))
@@ -47,14 +47,17 @@ namespace sedc_server_Server
             return options;
         }
 
+        internal void RegisterProcessor(IRequestProcessor processor)
+        {
+            Processors = Processors.Prepend(processor);
+        }
+
         internal static readonly ServerOptions Default = new ServerOptions
         {
             Port = 664, // The Neighbour of the Beast
             AllowedMethods = new List<string> { "GET", "POST" },
-            Processor = new DefaultRequestProcessor(),
+            Processors = new List<IRequestProcessor>{ new DefaultRequestProcessor() },
             Logger = new ConsoleLogger()
         };
-
-
     }
 }

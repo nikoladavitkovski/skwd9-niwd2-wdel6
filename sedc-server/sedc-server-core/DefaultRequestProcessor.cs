@@ -20,7 +20,7 @@ namespace Sedc.Server.Core
             };
         }
 
-        public IResponse Process(Azure.Core.Request request, ILogger logger)
+        public bool ShouldProcess(Request request)
         {
             throw new NotImplementedException();
         }
